@@ -65,7 +65,7 @@ func (ms *MyService) fetch(endPoint string) []string {
 	for offset := 0; ; offset += ms.limit {
 		endPoint := fmt.Sprintf("%s?limit=%d&offset=%d", endPoint, ms.limit, offset)
 
-		q, err := Common[models.ParticipantsResponse](ms, endPoint)
+		q, err := Common[models.ParticipantsList](ms, endPoint)
 		if err != nil {
 			continue
 		}
@@ -97,6 +97,27 @@ func (ms *MyService) ParticipantsWorkstation(login string) (*models.Participants
 	}
 
 	return workstation, nil
+}
+
+func (ms *MyService) Campuses() ([]models.Campus, error) {
+	endPoint := "/v1/campuses"
+	campuses, err := Common[models.CampusesList](ms, endPoint)
+	if err != nil {
+		return nil, err
+	}
+
+	return campuses.Campuses, nil
+}
+
+func (ms *MyService) Coalitions(campusId string) ([]models.Coalition, error) {
+	endPoint := fmt.Sprintf("/v1/campuses/%s/coalitions", campusId)
+	coalitions, err := Common[models.CoalitionsList](ms, endPoint)
+	// fmt.Println(coalitions)
+	if err != nil {
+		return nil, err
+	}
+
+	return coalitions.Coalitions, nil
 }
 
 func (ms *MyService) Participants() ([]models.Participant, error) {
@@ -157,6 +178,21 @@ func (ms *MyService) TribeLogins(coalitionID int) []string {
 }
 
 func (ms *MyService) All4MskTribesLogins() []string {
+	campuses, _ := ms.Campuses()
+	var campus models.Campus
+	for _, c := range campuses {
+		if strings.Contains(c.FullName, "Москва") {
+			campus = c
+			break
+		}
+	}
+	fmt.Println("here")
+	coalitions, _ := ms.Coalitions(campus.ID)
+
+	for _, coalition := range coalitions {
+		fmt.Println(coalition)
+	}
+
 	var tribes = map[int]string{
 		156: "Саламандры",
 		157: "Медоеды",

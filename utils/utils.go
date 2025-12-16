@@ -15,7 +15,7 @@ func ParticipantsFromJSON() ([]string, error) {
 		return nil, err
 	}
 
-	var response models.ParticipantsResponse
+	var response models.ParticipantsList
 	err = json.Unmarshal(data, &response)
 	if err != nil {
 		return nil, err

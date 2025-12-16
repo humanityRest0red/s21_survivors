@@ -13,6 +13,7 @@ func Run() {
 	bot, updates := botInitMust()
 	maxLength := 4000
 
+	service.All4MskTribesLogins()
 	for update := range updates {
 		if update.Message == nil {
 			continue
